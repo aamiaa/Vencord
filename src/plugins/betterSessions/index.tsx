@@ -18,11 +18,12 @@
 
 import * as DataStore from "@api/DataStore";
 import { Devs } from "@utils/constants";
+import { closeModal, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
 import { Button, Forms, React, TextInput, Tooltip } from "@webpack/common";
+
 import { ChromeIcon, DiscordIcon, EdgeIcon, FirefoxIcon, IEIcon, MobileIcon, OperaIcon, SafariIcon, UnknownIcon } from "./icons";
-import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, closeModal, openModal } from "@utils/modal";
 
 const TimestampClasses = findByPropsLazy("timestampTooltip", "blockquoteContainer");
 const SessionIconClasses = findByPropsLazy("sessionIcon");
@@ -171,6 +172,13 @@ export default definePlugin({
                                     defaultValue={savedNotesCache[session.id_hash] ?? ""}
                                     onChange={(e: string) => {
                                         savedNotesCache[session.id_hash] = e;
+                                    }}
+                                    onKeyDown={async e => {
+                                        if (e.key !== "Enter") return;
+                                        setName(savedNotesCache[session.id_hash]);
+                                        await DataStore.set("BetterSessions_savedNotesCache", savedNotesCache);
+
+                                        props.onClose();
                                     }}
                                 ></TextInput>
                             </ModalContent>
